@@ -27,8 +27,12 @@ const Welcome = styled.div`
   height: 100%;
 `;
 const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 22px 96px;
-  margin-left: 58px;
+
+  margin-left: 65px;
   ${mobile({
     padding: "22px 20px",
     marginLeft: "0",

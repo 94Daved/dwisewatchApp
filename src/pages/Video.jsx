@@ -12,6 +12,7 @@ const Container = styled.div`
   display: flex;
   margin-top: 50px;
   gap: 24px;
+  max-width: 3000px;
 `;
 
 const Content = styled.div`
@@ -46,6 +47,7 @@ const Info = styled.span`
 const Buttons = styled.div`
   display: flex;
   gap: 20px;
+
   color: ${({ theme }) => theme.text};
 `;
 
@@ -62,7 +64,7 @@ const Hr = styled.hr`
 `;
 
 const Recommendation = styled.div`
-  flex: 2;
+  flex: 1.8;
   ${mobile({ display: "none" })}
   ${iPad({ display: "none" })}
 `;
@@ -80,6 +82,7 @@ const Image = styled.img`
   width: 50px;
   height: 50px;
   border-radius: 50%;
+  object-fit: cover;
 `;
 
 const ChannelDetail = styled.div`
@@ -152,10 +155,10 @@ const Video = () => {
         <Hr />
         <Channel>
           <ChannelInfo>
-            <Image src="https://yt3.ggpht.com/yti/APfAmoE-Q0ZLJ4vk3vqmV4Kwp0sbrjxLyB8Q4ZgNsiRH=s88-c-k-c0x00ffffff-no-rj-mo" />
+            <Image src="https://www.adobe.com/express/discover/templates/media_12d73089b608a2a90b590d82d9f5e9837202d7410.png?width=400&format=webply&optimize=medium" />
             <ChannelDetail>
-              <ChannelName>Lama Dev</ChannelName>
-              <ChannelCounter>200K subscribers</ChannelCounter>
+              <ChannelName>dWise Tech</ChannelName>
+              <ChannelCounter>350K subscribers</ChannelCounter>
             </ChannelDetail>
           </ChannelInfo>
           <Subscribe>SUBSCRIBE</Subscribe>

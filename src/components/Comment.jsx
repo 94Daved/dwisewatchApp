@@ -11,13 +11,14 @@ const Avatar = styled.img`
   width: 50px;
   height: 50px;
   border-radius: 50%;
+  object-fit: cover;
 `;
 
 const Details = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  color: ${({ theme }) => theme.text}
+  color: ${({ theme }) => theme.text};
 `;
 const Name = styled.span`
   font-size: 13px;
@@ -38,7 +39,7 @@ const Text = styled.span`
 const Comment = () => {
   return (
     <Container>
-      <Avatar src="https://yt3.ggpht.com/yti/APfAmoE-Q0ZLJ4vk3vqmV4Kwp0sbrjxLyB8Q4ZgNsiRH=s88-c-k-c0x00ffffff-no-rj-mo" />
+      <Avatar src="https://img.freepik.com/free-vector/cardiologists-examining-heart-with-stethoscope-blood-samples-lab-tubes-among-pills-heartbeat-diagram-vector-illustration-cardiology-medical-examination-heart-disease-concept_74855-9817.jpg?size=626&ext=jpg&ga=GA1.2.835991350.1666183603" />
       <Details>
         <Name>
           John Doe <Date>1 day ago</Date>

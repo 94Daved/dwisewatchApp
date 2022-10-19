@@ -23,7 +23,8 @@ const Container = styled.div`
 
 const HamburgContainer = styled.div`
   display: flex;
-  margin-right: 20px;
+  margin-right: 15px;
+  ${mobile({ marginRight: "0px" })}
   height: 35px;
   border: 1px solid tranparent;
   width: 35px;
@@ -46,7 +47,8 @@ const Wrapper = styled.div`
 
 const Search = styled.div`
   width: 52%;
-  ${mobile({ width: "75%" })}
+  max-width: 600px;
+  ${mobile({ width: "100%" })}
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -71,6 +73,7 @@ const Input = styled.input`
 
 const Button = styled.button`
   padding: 5px 15px;
+  ${mobile({ padding: "3px 10px" })}
   background-color: transparent;
   border: 1px solid #3ea6ff;
   color: #3ea6ff;
@@ -87,6 +90,7 @@ const SearchButton = styled.button`
   align-items: center;
   border: none;
   padding: 5px 15px;
+  ${mobile({ padding: "3px 10px" })}
   color: inherit;
   background-color: ${({ theme }) => theme.bgSearchButton};
   border: 1px solid ${({ theme }) => theme.soft};
@@ -99,12 +103,12 @@ const VoiceSearchButton = styled.button`
   color: inherit;
   cursor: pointer;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 37px;
+  height: 37px;
   margin-left: 8px;
   border-radius: 50%;
   background-color: ${({ theme }) => theme.bgPlaceHolder};
-  border: 1px solid ${({ theme }) => theme.soft};
+  border: none;
 `;
 
 const Img = styled.img`
@@ -118,7 +122,6 @@ const Logo = styled.div`
   gap: 5px;
   font-weight: bold;
   ${mobile({ display: "none" })}
-  ${iPad({ display: "none" })}
 `;
 
 const LeftPosition = styled.div`
@@ -133,13 +136,14 @@ const LeftPosition = styled.div`
 const MiddlePosition = styled.div`
   display: flex;
   justify-content: center;
-  flex: 5;
+  flex: 11;
   padding: 0px 10px;
 `;
 const RightPosition = styled.div`
   flex: 1.4;
   display: flex;
   justify-content: flex-end;
+  margin-left: 10px;
 `;
 
 const iconStyle = {
