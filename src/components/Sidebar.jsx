@@ -19,7 +19,7 @@ const Container = styled.div`
   font-size: 14px;
   border: 1px solid ${({ theme }) => theme.soft};
   border-right: none;
-  position: fixed;
+  /* position: fixed; */
 `;
 
 const Wrapper = styled.div``;
@@ -43,22 +43,34 @@ const Sidebar = () => {
   return (
     <Container>
       <Wrapper>
-        <Item>
-          <HomeIcon />
-          Home
-        </Item>
-        <Item>
-          <ExploreOutlinedIcon />
-          Explore
-        </Item>
+        <Link to={`/`} style={{ color: "inherit", textDecoration: "none" }}>
+          <Item>
+            <HomeIcon />
+            Home
+          </Item>
+        </Link>
+        <Link
+          to={`/trends`}
+          style={{ color: "inherit", textDecoration: "none" }}
+        >
+          <Item>
+            <ExploreOutlinedIcon />
+            Explore
+          </Item>
+        </Link>
         <Item>
           <HistoryOutlinedIcon />
           History
         </Item>
-        <Item>
-          <SubscriptionsOutlinedIcon />
-          Subscribe
-        </Item>
+        <Link
+          to={`/subcriptions`}
+          style={{ color: "inherit", textDecoration: "none" }}
+        >
+          <Item>
+            <SubscriptionsOutlinedIcon />
+            Subscribe
+          </Item>
+        </Link>
         <Item>
           <VideoLibraryOutlinedIcon />
           Library

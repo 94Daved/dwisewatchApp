@@ -8,7 +8,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Video from "./pages/Video";
 import SignIn from "./pages/SignIn";
-import { mobile, iPad } from "./utils/responsive";
+import { mobile, iPad, semiMonitor, normalMonitor } from "./utils/responsive";
+import { useSelector } from "react-redux";
+import SignUp from "./pages/Signup";
+import NotFound from "./components/NotFound";
+import Search from "./pages/Search";
+import Channel from "./pages/Channel";
 
 const Container = styled.div`
   display: flex;
@@ -25,21 +30,23 @@ const Main = styled.div`
 const Welcome = styled.div`
   display: flex;
   height: 100%;
+  position: relative;
 `;
 const Wrapper = styled.div`
+  margin
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 22px 96px;
-
-  margin-left: 65px;
+  position: relative;
+  padding: 22px 90px;
   ${mobile({
-    padding: "22px 20px",
+    padding: "22px 10px",
     marginLeft: "0",
     display: "flex",
-    justifyContent: "center",
   })}
-  ${iPad({ padding: "22px 40px", marginLeft: "58px" })}
+  ${iPad({ padding: "22px 40px" })}
+  ${semiMonitor({ padding: "22px 40px" })}
+  ${normalMonitor({ padding: "22px 50px" })}
   min-height: calc(100% - 56px);
   flex: 21;
 `;
@@ -82,12 +89,21 @@ function App() {
               <Wrapper>
                 <Routes>
                   <Route path="/">
+                    <Route index element={<Home type="random" />} />
+                    <Route path="/trends" element={<Home type="trend" />} />
+                    <Route path="/subcriptions" element={<Home type="sub" />} />
                     <Route index element={<Home />} />
-                    <Route path="signin" element={<SignIn />} />
-                    <Route path="video">
-                      <Route path=":id" element={<Video />} />
+                    <Route path="/signin" element={<SignIn />} />
+                    <Route path="/signup" element={<SignUp />} />
+                    <Route path="/video">
+                      <Route index path=":id" element={<Video />} />
+                    </Route>
+                    <Route path="/search" element={<Search />} />
+                    <Route path="/channel">
+                      <Route index path=":id" element={<Channel />} />
                     </Route>
                   </Route>
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </Wrapper>
             </Welcome>

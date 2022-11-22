@@ -1,14 +1,12 @@
 import React from "react";
 import { useState } from "react";
 import styled from "styled-components";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { publicRequest } from "../requestResponse";
 import { mobile, iPad } from "../utils/responsive";
 import { useNavigate } from "react-router-dom";
 import { loginStart, loginSuccess, loginFailure } from "../redux/userSlice";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { auth, provider } from "../firebase";
+import { useDispatch } from "react-redux";
 
 const Container = styled.div`
   display: flex;
@@ -36,8 +34,6 @@ const Wrapper = styled.div`
 
 const Title = styled.h1`
   font-size: 24px;
-  white-space: nowrap;
-  overflow: hidden;
 `;
 
 const SubTitle = styled.h2`
@@ -80,6 +76,7 @@ const MoreLinks = styled.div`
 const OneLink = styled.span`
   margin-left: 30px;
 `;
+
 const LoginOptions = styled.span`
   font-size: 12px;
   color: inherit;
@@ -91,81 +88,51 @@ const ErrorMessage = styled.span`
   font-size: 14px;
 `;
 
-const SignIn = () => {
+const SignUp = () => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState({});
-  const { currentUser } = useSelector((state) => state.user);
+  const [email, setEmail] = useState({});
   const [password, setPassword] = useState({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleSignin = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(false);
-    dispatch(loginStart());
-
     try {
-      const res = await publicRequest.post("/auth/signin", {
+      const res = await publicRequest.post("/auth/signup", {
         name,
+        email,
         password,
       });
-      dispatch(loginSuccess(res.data));
-
-      navigate("/");
-    } catch (error) {
-      dispatch(loginFailure());
+      navigate("/signin");
       setLoading(false);
-      setError(true);
-    }
-  };
-
-  const signinWithGoogle = async (e) => {
-    e.preventDefault();
-    try {
-      const resGoogle = await signInWithPopup(auth, provider);
-      try {
-        const res = await publicRequest.post("/auth/google", {
-          name: resGoogle.user.displayName,
-          email: resGoogle.user.email,
-          img: resGoogle.user.photoURL,
-        });
-
-        dispatch(loginSuccess(res.data));
-        navigate("/");
-      } catch (error) {
-        dispatch(loginFailure());
-        setLoading(false);
-        setError(true);
-      }
     } catch (error) {}
   };
-  localStorage.setItem("token", JSON.stringify(currentUser?.token));
+
   return (
     <Container>
       <Wrapper>
-        <Title>Sign in</Title>
+        <Title>Sign up</Title>
         <SubTitle>to continue to dWiseTube</SubTitle>
         <Input
           placeholder="username"
           onChange={(e) => setName(e.target.value)}
         />
+        <Input placeholder="email" onChange={(e) => setEmail(e.target.value)} />
         <Input
           type="password"
           placeholder="password"
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button onClick={handleSignin} disabled={loading}>
-          Sign in
+        <Button onClick={handleSignup} disabled={loading}>
+          {error && <ErrorMessage>Failed to signup</ErrorMessage>}
+          Sign up
         </Button>
-        {error && <ErrorMessage>Failed to signin</ErrorMessage>}
-        <Title>Sign in with Google</Title>
-        <Button onClick={signinWithGoogle} disabled={loading}>
-          Google Sign in
-        </Button>
+
         <LoginOptions>
-          Don't have an account yet? <Link to="/signup"> signup</Link>
+          Already have an account? <Link to="/signin"> signin</Link>
         </LoginOptions>
       </Wrapper>
       <More>
@@ -180,4 +147,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;

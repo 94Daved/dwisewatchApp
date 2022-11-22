@@ -18,6 +18,8 @@ import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import SettingsBrightnessOutlinedIcon from "@mui/icons-material/SettingsBrightnessOutlined";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { mobile } from "../utils/responsive";
 
 const Container = styled.div`
   transform: translateX(${({ openMenu }) => (openMenu ? "-290px" : "0px")});
@@ -25,12 +27,18 @@ const Container = styled.div`
   margin-top: 56px;
   flex: 1;
   background-color: ${({ theme }) => theme.bg};
-  height: 92vh;
+  height: 100vh;
   color: ${({ theme }) => theme.text};
   font-size: 14px;
   position: fixed;
   z-index: 50;
   width: 200px;
+  ${mobile({
+    width: "160px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  })}
   border: 1px solid ${({ theme }) => theme.soft};
   overflow-x: hidden;
   &:hover {
@@ -54,7 +62,7 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  padding: 13px 8px 13px 0;
+  padding: 13px 8px 150px 10px;
 `;
 
 const Item = styled.div`
@@ -103,21 +111,35 @@ const Title = styled.h2`
 `;
 
 const Menu = ({ darkMode, setDarkMode, openMenu }) => {
+  const { currentUser } = useSelector((state) => state.user);
+
   return (
     <Container openMenu={openMenu}>
       <Wrapper>
-        <Item>
-          <HomeIcon />
-          Home
-        </Item>
-        <Item>
-          <ExploreOutlinedIcon />
-          Explore
-        </Item>
-        <Item>
-          <SubscriptionsOutlinedIcon />
-          Subscriptions
-        </Item>
+        <Link to={`/`} style={{ color: "inherit", textDecoration: "none" }}>
+          <Item>
+            <HomeIcon />
+            Home
+          </Item>
+        </Link>
+        <Link
+          to={`/trends`}
+          style={{ color: "inherit", textDecoration: "none" }}
+        >
+          <Item>
+            <ExploreOutlinedIcon />
+            Explore
+          </Item>
+        </Link>
+        <Link
+          to={`/subcriptions`}
+          style={{ color: "inherit", textDecoration: "none" }}
+        >
+          <Item>
+            <SubscriptionsOutlinedIcon />
+            Subscriptions
+          </Item>
+        </Link>
         <Hr />
         <Item>
           <VideoLibraryOutlinedIcon />
@@ -128,16 +150,20 @@ const Menu = ({ darkMode, setDarkMode, openMenu }) => {
           History
         </Item>
         <Hr />
-        <Login>
-          Sign in to like videos, comment, and subscribe.
-          <Link to="signin" style={{ textDecoration: "none" }}>
-            <Button>
-              <AccountCircleOutlinedIcon />
-              SIGN IN
-            </Button>
-          </Link>
-        </Login>
-        <Hr />
+        {!currentUser && (
+          <>
+            <Login>
+              Sign in to like videos, comment, and subscribe.
+              <Link to="signin" style={{ textDecoration: "none" }}>
+                <Button>
+                  <AccountCircleOutlinedIcon />
+                  SIGN IN
+                </Button>
+              </Link>
+            </Login>
+            <Hr />
+          </>
+        )}
         <Item>
           <LibraryMusicOutlinedIcon />
           Music

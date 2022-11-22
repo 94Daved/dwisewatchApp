@@ -1,24 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import Comments from "../components/Comments";
 import Card from "../components/Card";
-import { mobile, iPad } from "../utils/responsive";
+import { mobile, iPad, semiMonitor } from "../utils/responsive";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
+import { publicRequest } from "../requestResponse";
+import {
+  fetchStart,
+  fetchSuccess,
+  fetchFailure,
+  likes,
+  dislikes,
+} from "../redux/videoSlice";
+import { subscription } from "../redux/userSlice";
+import { format } from "timeago.js";
+import Recommendation from "../components/Recommendation";
+import millify from "millify";
 
 const Container = styled.div`
   display: flex;
   margin-top: 50px;
   gap: 24px;
+  width: 100%;
   max-width: 3000px;
 `;
 
 const Content = styled.div`
   flex: 5;
 `;
-const VideoWrapper = styled.div``;
+const VideoWrapper = styled.div`
+  width: 100%;
+`;
 
 const Title = styled.h1`
   font-size: 18px;
@@ -30,10 +49,9 @@ const Title = styled.h1`
 
 const Details = styled.div`
   display: flex;
-  ${mobile({ flexDirection: "column" })}
-  ${mobile({ alignItems: "flex-start" })}
-  ${iPad({ flexDirection: "column" })}
-  ${iPad({ alignItems: "flex-start" })}
+  ${mobile({ flexDirection: "column", alignItems: "flex-start" })}
+  ${iPad({ flexDirection: "column", alignItems: "flex-start" })}
+  ${semiMonitor({ flexDirection: "column", alignItems: "flex-start" })}
   align-items: center;
   justify-content: space-between;
 `;
@@ -42,6 +60,7 @@ const Info = styled.span`
   color: ${({ theme }) => theme.textSoft};
   ${mobile({ marginBottom: "10px" })}
   ${iPad({ marginBottom: "10px" })}
+  margin-bottom: 10px;
 `;
 
 const Buttons = styled.div`
@@ -63,11 +82,6 @@ const Hr = styled.hr`
   border: 0.5px solid ${({ theme }) => theme.soft};
 `;
 
-const Recommendation = styled.div`
-  flex: 1.8;
-  ${mobile({ display: "none" })}
-  ${iPad({ display: "none" })}
-`;
 const Channel = styled.div`
   display: flex;
   justify-content: space-between;
@@ -76,11 +90,12 @@ const Channel = styled.div`
 const ChannelInfo = styled.div`
   display: flex;
   gap: 20px;
+  cursor: pointer;
 `;
 
 const Image = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
 `;
@@ -109,40 +124,116 @@ const Description = styled.p`
 `;
 
 const Subscribe = styled.button`
-  background-color: #cc1a00;
+  background-color: ${({ theme }) => theme.bgSearchButton};
   font-weight: 500;
-  color: white;
+  color: ${({ theme }) => theme.text};
   border: none;
-  border-radius: 3px;
+  border-radius: 10px;
   height: max-content;
-  padding: 10px 20px;
+  padding: 5px 10px;
   cursor: pointer;
 `;
-
+const VideoFrame = styled.video`
+  max-height: 720px;
+  width: 100%;
+  object-fit: cover;
+`;
 const Video = () => {
+  const dispatch = useDispatch();
+  const location = useLocation().pathname.split("/")[2];
+  const { currentUser } = useSelector((state) => state.user);
+  const { currentVideo } = useSelector((state) => state.video);
+  const [video, setVideo] = useState({});
+  const [channel, setChannel] = useState({});
+
+  useEffect(() => {
+    const getVideos = async () => {
+      dispatch(fetchStart());
+      try {
+        const videoRes = await publicRequest.get(`/videos/find/${location}`);
+        setVideo(videoRes.data);
+        dispatch(fetchSuccess(videoRes.data));
+      } catch (error) {
+        dispatch(fetchFailure());
+      }
+    };
+
+    getVideos();
+  }, [location, dispatch]);
+
+  useEffect(() => {
+    const getChannel = async () => {
+      try {
+        const channelRes = await publicRequest.get(
+          `/users/find/${video?.userId}`
+        );
+        setChannel(channelRes.data);
+      } catch (error) {}
+    };
+    getChannel();
+  }, [video]);
+
+  const handlePlay = async () => {
+    try {
+      await publicRequest.post(`/videos/view/${currentVideo?._id}`);
+    } catch (error) {}
+  };
+  const handleLike = async () => {
+    try {
+      await publicRequest.post(`users/like/${currentVideo?._id}`);
+      console.log("liked");
+      dispatch(likes(currentUser._id));
+    } catch (error) {}
+  };
+
+  const handleDislike = async () => {
+    try {
+      await publicRequest.post(`users/dislike/${currentVideo?._id}`);
+      dispatch(dislikes(currentUser._id));
+      console.log("unliked");
+    } catch (error) {}
+  };
+
+  const handleSub = async () => {
+    currentUser.subscribedUsers.includes(channel._id)
+      ? await publicRequest.put(`/users/unsub/${channel._id}`)
+      : await publicRequest.put(`/users/sub/${channel._id}`);
+    dispatch(subscription(channel._id));
+  };
+
+  //TODO; Delete video functionality
   return (
     <Container>
       <Content>
         <VideoWrapper>
-          <iframe
-            width="100%"
-            height="750px"
-            src="https://www.youtube.com/embed/k3Vfj-e1Ma4"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
+          <VideoFrame
+            src={currentVideo?.videoUrl}
+            controls
+            autoPlay
+            onPlay={handlePlay}
+          />
         </VideoWrapper>
-        <Title>Test Video</Title>
+        <Title>{currentVideo?.title}</Title>
         <Details>
-          <Info>7,948,154 views • Jun 22, 2022</Info>
+          <Info>
+            {millify(currentVideo?.views)} views •{" "}
+            {format(currentVideo?.createdAt)}
+          </Info>
           <Buttons>
-            <Button>
-              <ThumbUpOutlinedIcon /> 123
+            <Button onClick={handleLike}>
+              {currentVideo?.likes.includes(currentUser?._id) ? (
+                <ThumbUpIcon />
+              ) : (
+                <ThumbUpOutlinedIcon />
+              )}
+              {currentVideo?.likes.length}
             </Button>
-            <Button>
-              <ThumbDownOffAltOutlinedIcon /> Dislike
+            <Button onClick={handleDislike}>
+              {currentVideo?.dislikes.includes(currentUser?._id) ? (
+                <ThumbDownIcon />
+              ) : (
+                <ThumbDownOffAltOutlinedIcon />
+              )}
             </Button>
             <Button>
               <ReplyOutlinedIcon /> Share
@@ -154,39 +245,31 @@ const Video = () => {
         </Details>
         <Hr />
         <Channel>
-          <ChannelInfo>
-            <Image src="https://www.adobe.com/express/discover/templates/media_12d73089b608a2a90b590d82d9f5e9837202d7410.png?width=400&format=webply&optimize=medium" />
-            <ChannelDetail>
-              <ChannelName>dWise Tech</ChannelName>
-              <ChannelCounter>350K subscribers</ChannelCounter>
-            </ChannelDetail>
-          </ChannelInfo>
-          <Subscribe>SUBSCRIBE</Subscribe>
+          <Link
+            to={`/channel/${currentVideo?.userId}`}
+            style={{ textDecoration: "none" }}
+          >
+            <ChannelInfo>
+              <Image src={channel?.img} />
+              <ChannelDetail>
+                <ChannelName>{channel?.name}</ChannelName>
+                <ChannelCounter>
+                  {channel?.subscribers} subscribers
+                </ChannelCounter>
+              </ChannelDetail>
+            </ChannelInfo>
+          </Link>
+          <Subscribe onClick={handleSub}>
+            {currentUser?.subscribedUsers.includes(channel._id)
+              ? "SUBSCRIBED"
+              : "SUBSCRIBE"}
+          </Subscribe>
         </Channel>
-        <Description>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Doloribus
-          laborum delectus unde quaerat dolore culpa sit aliquam at. Vitae
-          facere ipsum totam ratione exercitationem. Suscipit animi accusantium
-          dolores ipsam ut.
-        </Description>
+        <Description>{currentVideo?.desc}</Description>
         <Hr />
-        <Comments />
+        <Comments videoId={currentVideo?._id} />
       </Content>
-      <Recommendation>
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
-      </Recommendation>
+      <Recommendation tags={currentVideo?.tags} />
     </Container>
   );
 };
