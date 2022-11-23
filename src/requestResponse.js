@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const URL = "http://localhost:8800/api/";
+const URL = "https://dwisetube.herokuapp.com/";
 
 const sentToken = JSON.parse(localStorage.getItem("token"));
 
